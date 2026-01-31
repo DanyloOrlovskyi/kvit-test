@@ -9,7 +9,7 @@ export default function AppHeader() {
   };
 
   return (
-    <AppBar position="static" sx={{zIndex: 3}}>
+    <AppBar position="static" sx={{ zIndex: 3 }}>
       <Toolbar>
         <Satellite sx={{ mr: 2 }} />
         <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>

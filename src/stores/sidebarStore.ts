@@ -1,14 +1,13 @@
 import { makeAutoObservable } from 'mobx';
 
 export class SidebarStore {
-    isOpen: boolean = true;
+  isOpen: boolean = true;
 
-    constructor() {
-        makeAutoObservable(this);
-    }
+  constructor() {
+    makeAutoObservable(this);
+  }
 
-    handleToggleSidebar = () => {
-        this.isOpen = !this.isOpen;
-    };
-
+  handleToggleSidebar = () => {
+    this.isOpen = !this.isOpen;
+  };
 }

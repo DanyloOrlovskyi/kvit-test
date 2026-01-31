@@ -55,6 +55,7 @@ API_KEY=
 ```
 
 Description:
+
 - `API_KEY` — the string used for authentication in the sign‑in dialog. Enter it in the app to access the map.
 
 In Vite, variables are available via `import.meta.env`. The key check is implemented in the `AuthDialog` component.
