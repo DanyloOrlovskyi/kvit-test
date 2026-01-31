@@ -23,10 +23,10 @@ An interactive React application that displays objects on a map, simulates their
    npm install
    ```
 
-2. Create a `.env` file in the project root (next to `package.json`) based on `.env.example` and set your API key:
+2. Create a `.env` file in the project root (next to `package.json`) and set your API key (optional for demo):
 
    ```env
-   API_KEY=your_secret_key
+   VITE_API_KEY=your_secret_key
    ```
 
 3. Start the development server:
@@ -35,7 +35,7 @@ An interactive React application that displays objects on a map, simulates their
    npm run dev
    ```
 
-4. Open the app in your browser (Vite will print the URL, typically `http://localhost:5173`). To sign in, use exactly the API key specified in `.env`.
+4. Open the app in your browser (Vite will print the URL, typically `http://localhost:5173`). If `VITE_API_KEY` is set, enter exactly this value in the sign‑in dialog.
 
 Note: the entered key is stored in `localStorage` under the `apiKey` name. The logout button clears the key and the authentication state.
 
@@ -48,17 +48,17 @@ Note: the entered key is stored in `localStorage` under the `apiKey` name. The l
 
 ## Environment variables
 
-Supported variables are listed in `.env.example`:
+Supported variables (create `.env` in the project root):
 
 ```env
-API_KEY=
+VITE_API_KEY=
 ```
 
 Description:
 
-- `API_KEY` — the string used for authentication in the sign‑in dialog. Enter it in the app to access the map.
+- `VITE_API_KEY` — the string used for authentication in the sign‑in dialog. Enter it in the app to access the map.
 
-In Vite, variables are available via `import.meta.env`. The key check is implemented in the `AuthDialog` component.
+In Vite, variables are available via `import.meta.env`. The key check is implemented in the `AuthDialog` component via `import.meta.env.VITE_API_KEY`.
 
 ## Project structure (overview)
 
@@ -68,22 +68,26 @@ In Vite, variables are available via `import.meta.env`. The key check is impleme
 ├─ src/
 │  ├─ components/
 │  │  ├─ AppHeader.tsx
-│  │  ├─ AuthDialog.tsx    # sign-in dialog (compares with import.meta.env.API_KEY)
+│  │  ├─ AuthDialog.tsx    # sign-in dialog (compares with import.meta.env.VITE_API_KEY)
 │  │  ├─ MapView.tsx       # toggles Empty/Filled map view by isAuthenticated
 │  │  ├─ FilledMapView.tsx # map with markers, OSM tiles, updates subscription
 │  │  ├─ EmptyMapView.tsx  # placeholder view for non‑authenticated state
 │  │  ├─ MapMarker.tsx     # rendering of a single marker
 │  │  └─ Sidebar.tsx       # sidebar
 │  ├─ hooks/
+│  │  ├─ useCurrentTime.ts      # returns current time
 │  │  └─ useMapObjectUpdater.ts # initialization and periodic update of objects
+│  ├─ interfaces/               # interfaces
 │  ├─ stores/
 │  │  ├─ authStore.ts          # stores apiKey and authentication status
 │  │  ├─ objectTrackerStore.ts # stores objects and their status on the map
+│  │  ├─ sidebarStore.ts       # stores sidebar state
 │  │  └─ index.ts              # root store
 │  ├─ router.tsx           # routing and auth guard
 │  ├─ main.tsx             # entry point, MUI theme, RouterProvider
 │  ├─ styles/              # styles (Tailwind)
 │  └─ theme/               # MUI theme
+│  └─ types/               # types
 ├─ tailwind.config.js
 ├─ vite.config.ts
 ├─ tsconfig*.json
@@ -94,7 +98,7 @@ In Vite, variables are available via `import.meta.env`. The key check is impleme
 
 - Authentication
   - `AuthDialog.tsx` is shown if `rootStore.auth.isAuthenticated === false`.
-  - When you enter the key, it’s compared to `import.meta.env.API_KEY`. If it matches, the key is saved to `localStorage` and access is granted.
+  - When you enter the key, it’s compared to `import.meta.env.VITE_API_KEY` (if set). On success, the key is saved to `localStorage` and access is granted.
 
 - Map and objects
   - `FilledMapView.tsx` uses `useMapObjectUpdater`, which:
@@ -119,7 +123,7 @@ In Vite, variables are available via `import.meta.env`. The key check is impleme
 
 ## Troubleshooting
 
-- “Can’t sign in”: make sure the `API_KEY` value in `.env` matches the key you enter. Restart `npm run dev` after changing `.env`.
+- “Can’t sign in”: make sure the `VITE_API_KEY` value in `.env` matches the key you enter. Restart `npm run dev` after changing `.env`.
 - “Map doesn’t render”: check that Leaflet styles are imported in `src/main.tsx` — the line `import 'leaflet/dist/leaflet.css';`.
 - “Weird styles”: clear the browser cache/remove `node_modules`, then run `rm -rf node_modules && npm install`.
 
