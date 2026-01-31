@@ -1,5 +1,5 @@
-import type { MapObject } from "../interfaces";
-import { makeAutoObservable } from "mobx";
+import type { MapObject } from '@/interfaces';
+import { makeAutoObservable } from 'mobx';
 
 export class ObjectTrackerStore {
   objects = new Map<string, MapObject>();
@@ -8,37 +8,51 @@ export class ObjectTrackerStore {
     makeAutoObservable(this, {}, { autoBind: true });
   }
 
-  updateObject(obj: Omit<MapObject, "lastUpdate" | "status">) {
+  setObject(obj: Omit<MapObject, 'lastUpdate' | 'status'>) {
     this.objects.set(obj.id, {
       ...obj,
       lastUpdate: Date.now(),
-      status: "active",
+      status: 'active',
     });
   }
 
   checkLostObjects() {
     const now = Date.now();
-    const lostThreshold = 30000;
-    const removeThreshold = 300000;
+    const LOST_THRESHOLD_MS = 30000;
+    const REMOVE_THRESHOLD_MS = 300000;
 
-    this.objects.forEach((obj, id) => {
-      const timeSinceUpdate = now - obj.lastUpdate;
+    let markedCount = 0;
+    const maxMarkPerCall = 1;
 
-      if (timeSinceUpdate > removeThreshold) {
+    const ids = [...this.objects.keys()];
+
+    for (const id of ids) {
+      const obj = this.objects.get(id);
+      if (!obj) continue;
+
+      const age = now - obj.lastUpdate;
+
+      if (age > REMOVE_THRESHOLD_MS) {
         this.objects.delete(id);
-      } else if (timeSinceUpdate > lostThreshold && obj.status === "active") {
-        obj.status = "lost";
+        continue;
       }
-    });
+
+      if (obj.status === 'active' && age > LOST_THRESHOLD_MS) {
+        obj.status = 'lost';
+        markedCount++;
+
+        if (markedCount >= maxMarkPerCall) {
+          break;
+        }
+      }
+    }
   }
 
   get activeObjects() {
-    return Array.from(this.objects.values()).filter(
-      (o) => o.status === "active",
-    );
+    return [...this.objects.values()].filter((o) => o.status === 'active');
   }
 
   get lostObjects() {
-    return Array.from(this.objects.values()).filter((o) => o.status === "lost");
+    return [...this.objects.values()].filter((o) => o.status === 'lost');
   }
 }

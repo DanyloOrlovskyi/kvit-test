@@ -1,65 +1,68 @@
-import { useEffect } from "react";
-import type { MapObject } from "../interfaces";
+import type { MapObject } from '@/interfaces';
+import { RootStore } from '@/stores';
+import { useEffect } from 'react';
 
-export const useMapObjectUpdater = (rootStore: any) => {
+type Position = { lat: number; lng: number };
+
+export const useMapObjectUpdater = (rootStore: RootStore) => {
   useEffect(() => {
-    initializeMapObjects(rootStore.objectTracker.updateObject);
+    initializeMapObjects(rootStore.objectTracker.setObject);
 
     const updateInterval = setInterval(() => {
-      const objects: MapObject[] = Array.from(
-        rootStore.objectTracker.objects.values(),
-      );
-      if (objects.length === 0) return;
+      rootStore.objectTracker.checkLostObjects();
+      const objects: MapObject[] = [...rootStore.objectTracker.objects.values()];
 
-      const numToUpdate = Math.floor(Math.random() * 5) + 1;
+      if (!objects.length) return;
+
+      const numToUpdate = Math.floor(Math.random() * 10);
       for (let i = 0; i < numToUpdate; i++) {
-        const randomIndex = Math.floor(Math.random() * objects.length);
-        const obj = objects[randomIndex];
-        if (obj?.status === "active") {
-          rootStore.objectTracker.updateObject({
+        const obj = objects[i];
+        if (obj?.status === 'active') {
+          rootStore.objectTracker.setObject({
             id: obj.id,
             lat: obj.lat + (Math.random() - 0.5) * 0.01,
             lng: obj.lng + (Math.random() - 0.5) * 0.01,
-            direction: (obj.direction + (Math.random() - 0.5) * 30) % 360,
+            direction: (obj.direction + 0.5 * 30) % 360,
           });
         }
       }
-    }, 2000);
-
-    const checkInterval = setInterval(() => {
-      rootStore.objectTracker.checkLostObjects();
     }, 5000);
 
     return () => {
       clearInterval(updateInterval);
-      clearInterval(checkInterval);
     };
   }, [rootStore]);
 };
 
 const initializeMapObjects = (
-  updateObject: (obj: Omit<MapObject, "lastUpdate" | "status">) => void,
+  setObject: (obj: Omit<MapObject, 'lastUpdate' | 'status'>) => void
 ) => {
-  const baseCoords = [
+  const baseCoords: Position[] = [
     { lat: 50.4501, lng: 30.5234 },
     { lat: 48.3794, lng: 31.1656 },
     { lat: 49.8397, lng: 24.0297 },
   ];
 
   const numObjects = 100;
+
   const objectIds = Array.from(
     { length: numObjects },
-    (_, i) => `OBJ-${String(i + 1).padStart(3, "0")}`,
+    (_, i) => `OBJ-${String(i + 1).padStart(3, '0')}`
   );
 
-  objectIds.forEach((id, idx) => {
-    const base = baseCoords[idx % baseCoords.length];
-    const offset = Math.random() * 0.5;
+  objectIds.forEach((objectId, index) => {
+    const baseCoord = baseCoords[index % baseCoords.length];
 
-    updateObject({
-      id,
-      lat: base.lat + (Math.random() - 0.5) * offset,
-      lng: base.lng + (Math.random() - 0.5) * offset,
+    const angle = Math.random() * 2 * Math.PI;
+    const r = Math.sqrt(Math.random()) * 0.5;
+
+    const dLat = r * Math.cos(angle);
+    const dLng = r * Math.sin(angle);
+
+    setObject({
+      id: objectId,
+      lat: baseCoord.lat + dLat,
+      lng: baseCoord.lng + dLng,
       direction: Math.random() * 360,
     });
   });

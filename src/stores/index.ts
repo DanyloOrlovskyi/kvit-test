@@ -1,7 +1,7 @@
-import { ObjectTrackerStore } from "./objectTrackerStore";
-import { AuthStore } from "./authStore";
+import { AuthStore } from './authStore';
+import { ObjectTrackerStore } from './objectTrackerStore';
 
-class RootStore {
+export class RootStore {
   objectTracker = new ObjectTrackerStore();
   auth = new AuthStore();
 }

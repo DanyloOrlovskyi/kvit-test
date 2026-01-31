@@ -4,7 +4,7 @@ interface MapObject {
   lng: number;
   direction: number;
   lastUpdate: number;
-  status: "active" | "lost";
+  status: 'active' | 'lost';
 }
 
 export type { MapObject };

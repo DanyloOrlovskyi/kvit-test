@@ -1,31 +1,33 @@
-import React, { useState } from "react";
 import {
-  Typography,
   Button,
   Dialog,
-  DialogTitle,
-  DialogContent,
   DialogActions,
+  DialogContent,
+  DialogTitle,
   TextField,
-} from "@mui/material";
+  Typography,
+} from '@mui/material';
+import React, { useState } from 'react';
 
-import { rootStore } from "../stores";
+import { rootStore } from '@/stores';
 
 const AuthDialog: React.FC = () => {
-  const [key, setKey] = useState("");
-  const [error, setError] = useState("");
+  const [key, setKey] = useState('');
+  const [error, setError] = useState('');
+
+  const apiKey = import.meta.env.API_KEY;
 
   const onAuth = (key: string) => {
     rootStore.auth.setApiKey(key);
   };
 
   const handleSubmit = () => {
-    if (key.length < 8) {
-      setError("API ключ має містити мінімум 8 символів");
+    if (key !== apiKey) {
+      setError('API ключ має містити мінімум 8 символів');
       return;
     }
     onAuth(key);
-    setError("");
+    setError('');
   };
 
   return (
@@ -42,11 +44,9 @@ const AuthDialog: React.FC = () => {
           type="password"
           value={key}
           onChange={(e) => setKey(e.target.value)}
-          onKeyPress={(e) => e.key === "Enter" && handleSubmit()}
+          onKeyDown={(e) => e.key === 'Enter' && handleSubmit()}
           error={!!error}
-          helperText={
-            error || "Для демо використайте будь-який ключ (мін. 8 символів)"
-          }
+          helperText={error ?? 'Для демо використайте будь-який ключ (мін. 8 символів)'}
           sx={{ mt: 1 }}
         />
       </DialogContent>

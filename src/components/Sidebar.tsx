@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { GpsFixed, GpsOff, Navigation as NavigationIcon } from '@mui/icons-material';
 import {
   Box,
   Card,
@@ -8,21 +8,17 @@ import {
   ListItem,
   ListItemText,
   Typography,
-} from "@mui/material";
-import {
-  GpsFixed,
-  GpsOff,
-  Navigation as NavigationIcon,
-} from "@mui/icons-material";
+} from '@mui/material';
 
-import type { MapObject } from "../interfaces";
+import { useEffect, useState } from 'react';
 
-const Sidebar: React.FC<{
-  activeObjects: MapObject[];
-  lostObjects: MapObject[];
-}> = ({ activeObjects, lostObjects }) => {
-  // eslint-disable-next-line react-hooks/purity
-  const [currentTime, setCurrentTime] = useState(Date.now());
+// import useCurrentTime from '@/hooks/useCurrentTime.ts';
+import { rootStore } from '@/stores';
+
+const Sidebar = () => {
+  const [currentTime, setCurrentTime] = useState(() => Date.now());
+
+  const { activeObjects, lostObjects } = rootStore.objectTracker;
 
   useEffect(() => {
     const interval = setInterval(() => setCurrentTime(Date.now()), 1000);
@@ -33,12 +29,12 @@ const Sidebar: React.FC<{
     <Box
       sx={{
         width: 320,
-        bgcolor: "background.paper",
+        bgcolor: 'background.paper',
         borderLeft: 1,
-        borderColor: "divider",
-        display: "flex",
-        flexDirection: "column",
-        overflow: "hidden",
+        borderColor: 'divider',
+        display: 'flex',
+        flexDirection: 'column',
+        overflow: 'hidden',
       }}
     >
       <Box sx={{ p: 2 }}>
@@ -47,7 +43,7 @@ const Sidebar: React.FC<{
             <Typography variant="h6" gutterBottom>
               Статистика
             </Typography>
-            <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap" }}>
+            <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
               <Chip
                 icon={<GpsFixed />}
                 label={`Активні: ${activeObjects.length}`}
@@ -65,14 +61,14 @@ const Sidebar: React.FC<{
         </Card>
       </Box>
 
-      <Box sx={{ flex: 1, overflow: "auto", px: 2, pb: 2 }}>
+      <Box sx={{ flex: 1, overflow: 'auto', px: 2, pb: 2 }}>
         {activeObjects.length > 0 && (
           <Box sx={{ mb: 2 }}>
             <Typography
               variant="subtitle2"
               color="text.secondary"
               gutterBottom
-              sx={{ textTransform: "uppercase", fontWeight: 600 }}
+              sx={{ textTransform: 'uppercase', fontWeight: 600 }}
             >
               Активні об'єкти
             </Typography>
@@ -81,11 +77,11 @@ const Sidebar: React.FC<{
                 <ListItem
                   key={obj.id}
                   sx={{
-                    bgcolor: "success.50",
+                    bgcolor: 'success.50',
                     mb: 0.5,
                     borderRadius: 1,
                     border: 1,
-                    borderColor: "success.200",
+                    borderColor: 'success.200',
                   }}
                 >
                   <NavigationIcon
@@ -93,20 +89,12 @@ const Sidebar: React.FC<{
                       mr: 1,
                       fontSize: 20,
                       transform: `rotate(${obj.direction}deg)`,
-                      color: "success.main",
+                      color: 'success.main',
                     }}
                   />
                   <ListItemText
                     primary={obj.id}
                     secondary={`${obj.lat.toFixed(4)}, ${obj.lng.toFixed(4)}`}
-                    primaryTypographyProps={{
-                      fontWeight: 500,
-                      fontSize: "0.875rem",
-                    }}
-                    secondaryTypographyProps={{
-                      fontSize: "0.75rem",
-                      fontFamily: "monospace",
-                    }}
                   />
                 </ListItem>
               ))}
@@ -120,7 +108,7 @@ const Sidebar: React.FC<{
               variant="subtitle2"
               color="text.secondary"
               gutterBottom
-              sx={{ textTransform: "uppercase", fontWeight: 600 }}
+              sx={{ textTransform: 'uppercase', fontWeight: 600 }}
             >
               Втрачені об'єкти
             </Typography>
@@ -129,26 +117,19 @@ const Sidebar: React.FC<{
                 <ListItem
                   key={obj.id}
                   sx={{
-                    bgcolor: "error.50",
+                    bgcolor: 'error.50',
                     mb: 0.5,
                     borderRadius: 1,
                     border: 1,
-                    borderColor: "error.200",
+                    borderColor: 'error.200',
                   }}
                 >
-                  <GpsOff sx={{ mr: 1, fontSize: 20, color: "error.main" }} />
+                  <GpsOff sx={{ mr: 1, fontSize: 20, color: 'error.main' }} />
                   <ListItemText
                     primary={obj.id}
                     secondary={`Втрачено ${Math.floor(
-                      (currentTime - obj.lastUpdate) / 1000,
+                      (currentTime - obj.lastUpdate) / 1000
                     )}с тому`}
-                    primaryTypographyProps={{
-                      fontWeight: 500,
-                      fontSize: "0.875rem",
-                    }}
-                    secondaryTypographyProps={{
-                      fontSize: "0.75rem",
-                    }}
                   />
                 </ListItem>
               ))}

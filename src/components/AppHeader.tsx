@@ -1,9 +1,13 @@
-import { AppBar, Toolbar, Typography, Button } from "@mui/material";
-import { Logout as LogoutIcon, Satellite } from "@mui/icons-material";
+import { Logout as LogoutIcon, Satellite } from '@mui/icons-material';
+import { AppBar, Button, Toolbar, Typography } from '@mui/material';
 
-import { rootStore } from "../stores";
+import { rootStore } from '@/stores';
 
 export default function AppHeader() {
+  const handleLogout = () => {
+    rootStore.auth.logout();
+  };
+
   return (
     <AppBar position="static">
       <Toolbar>
@@ -12,11 +16,7 @@ export default function AppHeader() {
           Object Tracker System
         </Typography>
         {rootStore.auth.isAuthenticated && (
-          <Button
-            color="inherit"
-            startIcon={<LogoutIcon />}
-            onClick={rootStore.auth.logout}
-          >
+          <Button startIcon={<LogoutIcon />} onClick={handleLogout}>
             Вийти
           </Button>
         )}
