@@ -9,14 +9,14 @@ export default function AppHeader() {
   };
 
   return (
-    <AppBar position="static">
+    <AppBar position="static" sx={{zIndex: 3}}>
       <Toolbar>
         <Satellite sx={{ mr: 2 }} />
         <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
           Object Tracker System
         </Typography>
         {rootStore.auth.isAuthenticated && (
-          <Button startIcon={<LogoutIcon />} onClick={handleLogout}>
+          <Button sx={{ color: 'white' }} startIcon={<LogoutIcon />} onClick={handleLogout}>
             Вийти
           </Button>
         )}

@@ -15,15 +15,15 @@ const AuthDialog: React.FC = () => {
   const [key, setKey] = useState('');
   const [error, setError] = useState('');
 
-  const apiKey = import.meta.env.API_KEY;
+  const apiKey = import.meta.env.VITE_API_KEY;
 
   const onAuth = (key: string) => {
     rootStore.auth.setApiKey(key);
   };
 
   const handleSubmit = () => {
-    if (key !== apiKey) {
-      setError('API ключ має містити мінімум 8 символів');
+    if (key == apiKey) {
+      setError('Невірний API ключ');
       return;
     }
     onAuth(key);
