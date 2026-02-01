@@ -58,37 +58,52 @@ Description:
 
 - `VITE_API_KEY` — the string used for authentication in the sign‑in dialog. Enter it in the app to access the map.
 
-In Vite, variables are available via `import.meta.env`. The key check is implemented in the `AuthDialog` component via `import.meta.env.VITE_API_KEY`.
+In Vite, variables are available via `import.meta.env`. The key is validated in the MobX auth store (`AuthStore.checkApiKey`) using `import.meta.env.VITE_API_KEY`, and the flow is wired to the UI via `pages/AuthPage.tsx` and `routes/ProtectedRoute.tsx`.
 
-## Project structure (overview)
+## Project structure
 
 ```
 .
-├─ public/                 # static assets
+├─ public/                      # static assets
 ├─ src/
+│  ├─ App.tsx                   # root application component
+│  ├─ assets/                   # optional static assets for bundling
 │  ├─ components/
-│  │  ├─ AppHeader.tsx
-│  │  ├─ AuthDialog.tsx    # sign-in dialog (compares with import.meta.env.VITE_API_KEY)
-│  │  ├─ MapView.tsx       # toggles Empty/Filled map view by isAuthenticated
-│  │  ├─ FilledMapView.tsx # map with markers, OSM tiles, updates subscription
-│  │  ├─ EmptyMapView.tsx  # placeholder view for non‑authenticated state
-│  │  ├─ MapMarker.tsx     # rendering of a single marker
-│  │  └─ Sidebar.tsx       # sidebar
+│  │  ├─ ActiveObjectItem.tsx   # list item for active objects
+│  │  ├─ AppHeader.tsx          # app header
+│  │  ├─ LostObjectItem.tsx     # list item for lost objects
+│  │  ├─ MapMarker.tsx          # renders a single marker on the map
+│  │  ├─ Sidebar.tsx            # sidebar
+│  │  └─ index.tsx              # barrel export of components
 │  ├─ hooks/
-│  │  ├─ useCurrentTime.ts      # returns current time
-│  │  └─ useMapObjectUpdater.ts # initialization and periodic update of objects
-│  ├─ interfaces/               # interfaces
+│  │  ├─ useCurrentTime.ts      # current time hook
+│  │  └─ useMapObjectUpdater.ts # initialization and periodic updates of objects
+│  ├─ interfaces/               # domain model types/interfaces
+│  │  ├─ auth.types.ts
+│  │  ├─ map.types.ts
+│  │  └─ index.ts
+│  ├─ layouts/
+│  │  └─ AppLayout.tsx          # main layout (header + sidebar + content)
+│  ├─ pages/
+│  │  ├─ AuthPage.tsx           # API key input page
+│  │  ├─ MapPage.tsx            # main page with map/content
+│  │  └─ NotFoundPage.tsx       # 404
+│  ├─ routes/
+│  │  └─ ProtectedRoute.tsx     # route guard for authentication check
 │  ├─ stores/
-│  │  ├─ authStore.ts          # stores apiKey and authentication status
-│  │  ├─ objectTrackerStore.ts # stores objects and their status on the map
-│  │  ├─ sidebarStore.ts       # stores sidebar state
-│  │  └─ index.ts              # root store
-│  ├─ router.tsx           # routing and auth guard
-│  ├─ main.tsx             # entry point, MUI theme, RouterProvider
-│  ├─ styles/              # styles (Tailwind)
-│  └─ theme/               # MUI theme
-│  └─ types/               # types
-├─ tailwind.config.js
+│  │  ├─ authStore.ts           # authentication state
+│  │  ├─ objectTrackerStore.ts  # objects and their statuses on the map
+│  │  ├─ sidebarStore.ts        # sidebar state
+│  │  └─ index.ts               # root store (exports store/provider)
+│  ├─ styles/
+│  │  ├─ App.css                # base app styles
+│  │  └─ index.css              # global styles
+│  ├─ theme/
+│  │  └─ theme.ts               # MUI theme
+│  ├─ types/
+│  │  └─ mui.d.ts               # MUI type augmentations
+│  ├─ constants.ts              # application constants
+│  └─ main.tsx                  # entry point; mounts theme and router
 ├─ vite.config.ts
 ├─ tsconfig*.json
 └─ README.md
@@ -97,24 +112,24 @@ In Vite, variables are available via `import.meta.env`. The key check is impleme
 ## How it works
 
 - Authentication
-  - `AuthDialog.tsx` is shown if `rootStore.auth.isAuthenticated === false`.
-  - When you enter the key, it’s compared to `import.meta.env.VITE_API_KEY` (if set). On success, the key is saved to `localStorage` and access is granted.
+  - `authStore.ts` holds the login state in the `isAuthenticated` field.
+  - The API key is validated by `checkApiKey`, which compares the entered value with `import.meta.env.VITE_API_KEY`.
+  - On success, a login marker is saved to `localStorage` (`apiKey: 'true'`); on logout it is removed.
+  - The UI uses `routes/ProtectedRoute.tsx` to restrict access to protected pages (e.g., `MapPage`). `pages/AuthPage.tsx` renders the key input form.
 
 - Map and objects
-  - `FilledMapView.tsx` uses `useMapObjectUpdater`, which:
-    - initializes ~100 objects around several geo points once;
-    - slightly “moves” a subset of active objects every 5 seconds;
-    - marks objects as “lost” when they haven’t been updated for a while and eventually removes them.
-  - Data is stored in `ObjectTrackerStore` (MobX); computed lists `activeObjects` and `lostObjects` are exposed via getters.
+  - Initialization and periodic updates of data are handled in the `useMapObjectUpdater` hook.
+  - A subset of active objects “moves” periodically; stale ones are marked as "lost" and later removed.
+  - Data is stored in `objectTrackerStore.ts` (MobX); it exposes lists of active and lost objects.
 
 ## UI and styles
 
-- MUI: global theme is located in `src/theme/`, base layout is built with MUI components (`Box`, `Button`, etc.).
-- Tailwind: configured in `tailwind.config.js`, global styles in `src/styles/index.css`.
+- MUI: global theme — `src/theme/theme.ts`; layout built with `AppLayout.tsx` and MUI components (`Box`, `Button`, etc.).
 
 ## Routing
 
-- React Router 7 is used. In `router.tsx` the `AuthGuard` only allows authenticated users to access the primary layout.
+- React Router 7 is used. Private route access is controlled by `routes/ProtectedRoute.tsx`.
+- Main layout — `layouts/AppLayout.tsx`; pages are located in `src/pages/`.
 
 ## Code quality
 

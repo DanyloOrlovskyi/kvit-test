@@ -34,6 +34,7 @@ const AuthPage = () => {
         position: 'relative',
         width: '100%',
         height: '100%',
+        backgroundColor: 'background.default',
       }}
     >
       <Dialog maxWidth="sm" fullWidth open={true}>
