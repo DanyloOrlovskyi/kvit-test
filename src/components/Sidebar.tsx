@@ -1,30 +1,12 @@
-import {
-  GpsFixed,
-  GpsOff,
-  Menu as MenuIcon,
-  MenuOpen,
-  Navigation as NavigationIcon,
-} from '@mui/icons-material';
-import {
-  Box,
-  Card,
-  CardContent,
-  Chip,
-  IconButton,
-  List,
-  ListItem,
-  ListItemText,
-  Tooltip,
-  Typography,
-} from '@mui/material';
-
-import useCurrentTime from '@/hooks/useCurrentTime';
+import { GpsFixed, GpsOff, Menu as MenuIcon, MenuOpen } from '@mui/icons-material';
+import { Box, Card, CardContent, Chip, IconButton, List, Tooltip, Typography } from '@mui/material';
 
 import { rootStore } from '@/stores';
 
-const Sidebar = () => {
-  const currentTime = useCurrentTime();
+import ActiveObjectItem from './ActiveObjectItem';
+import LostObjectItem from './LostObjectItem';
 
+const Sidebar = () => {
   const { activeObjects, lostObjects } = rootStore.objectTracker;
 
   return (
@@ -106,29 +88,7 @@ const Sidebar = () => {
               </Typography>
               <List dense>
                 {activeObjects.map((obj) => (
-                  <ListItem
-                    key={obj.id}
-                    sx={{
-                      bgcolor: 'success.50',
-                      mb: 0.5,
-                      borderRadius: 1,
-                      border: 1,
-                      borderColor: 'success.200',
-                    }}
-                  >
-                    <NavigationIcon
-                      sx={{
-                        mr: 1,
-                        fontSize: 20,
-                        transform: `rotate(${obj.direction}deg)`,
-                        color: 'success.main',
-                      }}
-                    />
-                    <ListItemText
-                      primary={obj.id}
-                      secondary={`${obj.lat.toFixed(4)}, ${obj.lng.toFixed(4)}`}
-                    />
-                  </ListItem>
+                  <ActiveObjectItem obj={obj} key={obj.id} />
                 ))}
               </List>
             </Box>
@@ -146,24 +106,7 @@ const Sidebar = () => {
               </Typography>
               <List dense>
                 {lostObjects.map((obj) => (
-                  <ListItem
-                    key={obj.id}
-                    sx={{
-                      bgcolor: 'error.50',
-                      mb: 0.5,
-                      borderRadius: 1,
-                      border: 1,
-                      borderColor: 'error.200',
-                    }}
-                  >
-                    <GpsOff sx={{ mr: 1, fontSize: 20, color: 'error.main' }} />
-                    <ListItemText
-                      primary={obj.id}
-                      secondary={`Втрачено ${Math.floor(
-                        (currentTime - obj.lastUpdate) / 1000
-                      )}с тому`}
-                    />
-                  </ListItem>
+                  <LostObjectItem key={obj.id} obj={obj} />
                 ))}
               </List>
             </Box>

@@ -39,6 +39,7 @@ export class ObjectTrackerStore {
 
       if (obj.status === 'active' && age > LOST_THRESHOLD_MS) {
         obj.status = 'lost';
+        obj.lastUpdate = now;
         markedCount++;
 
         if (markedCount >= maxMarkPerCall) {
