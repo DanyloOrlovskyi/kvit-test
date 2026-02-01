@@ -18,19 +18,14 @@ import {
   Typography,
 } from '@mui/material';
 
-import { useEffect, useState } from 'react';
+import useCurrentTime from '@/hooks/useCurrentTime';
 
 import { rootStore } from '@/stores';
 
 const Sidebar = () => {
-  const [currentTime, setCurrentTime] = useState(() => Date.now());
+  const currentTime = useCurrentTime();
 
   const { activeObjects, lostObjects } = rootStore.objectTracker;
-
-  useEffect(() => {
-    const interval = setInterval(() => setCurrentTime(Date.now()), 1000);
-    return () => clearInterval(interval);
-  }, []);
 
   return (
     <>

@@ -1,17 +1,14 @@
+import { MapMarker } from '@/components';
 import { useMapObjectUpdater } from '@/hooks/useMapObjectUpdater.ts';
 import type { MapObject } from '@/interfaces';
 import { rootStore } from '@/stores';
 import { Box } from '@mui/material';
 import { observer } from 'mobx-react-lite';
 import { MapContainer, TileLayer } from 'react-leaflet';
-import MapMarker from './MapMarker';
 
-type Position = [number, number];
+import { DEFAULT_CENTER, DEFAULT_ZOOM } from '@/constants';
 
-const FilledMapView = observer(() => {
-  const DEFAULT_CENTER: Position = [50.4501, 30.5234];
-  const DEFAULT_ZOOM: number = 8;
-
+const MapPage = observer(() => {
   useMapObjectUpdater(rootStore);
 
   const allObjects: MapObject[] = [...rootStore.objectTracker.objects.values()];
@@ -44,4 +41,4 @@ const FilledMapView = observer(() => {
   );
 });
 
-export default FilledMapView;
+export default MapPage;

@@ -1,12 +1,29 @@
-import { Box } from '@mui/material';
 import { observer } from 'mobx-react-lite';
-import { Outlet } from 'react-router';
+import { BrowserRouter, Route, Routes } from 'react-router';
+
+import ProtectedRoute from './routes/ProtectedRoute';
+
+import AppLayout from './layouts/AppLayout';
+
+import AuthPage from './pages/AuthPage';
+import MapPage from './pages/MapPage';
+import NotFoundPage from './pages/NotFoundPage';
 
 const App = observer(() => {
   return (
-    <Box sx={{ height: '100vh', display: 'flex', flexDirection: 'column' }}>
-      <Outlet />
-    </Box>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/auth" element={<AuthPage />} />
+
+        <Route element={<ProtectedRoute />}>
+          <Route element={<AppLayout />}>
+            <Route path="/" element={<MapPage />} />
+          </Route>
+        </Route>
+
+        <Route path="*" element={<NotFoundPage />} />
+      </Routes>
+    </BrowserRouter>
   );
 });
 

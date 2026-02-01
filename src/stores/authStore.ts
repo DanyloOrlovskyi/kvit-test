@@ -1,7 +1,6 @@
 import { makeAutoObservable } from 'mobx';
 
 export class AuthStore {
-  apiKey: string | null = null;
   isAuthenticated = false;
 
   constructor() {
@@ -10,21 +9,30 @@ export class AuthStore {
   }
 
   loadApiKey = () => {
-    const stored = localStorage.getItem('apiKey');
-    if (stored) {
-      this.apiKey = stored;
+    const storedApiKey = localStorage.getItem('apiKey');
+    if (storedApiKey) {
       this.isAuthenticated = true;
     }
   };
 
-  setApiKey = (key: string) => {
-    this.apiKey = key;
-    this.isAuthenticated = true;
-    localStorage.setItem('apiKey', key);
+  checkApiKey = (key: string) => {
+    const apiKey = import.meta.env.VITE_API_KEY;
+
+    if (apiKey === key) {
+      this.isAuthenticated = true;
+      localStorage.setItem('apiKey', 'true');
+      return {
+        success: true,
+        message: 'Авторизація пройшла успішно',
+      };
+    }
+    return {
+      success: false,
+      message: 'Невірний API ключ',
+    };
   };
 
   logout = () => {
-    this.apiKey = null;
     this.isAuthenticated = false;
     localStorage.removeItem('apiKey');
   };

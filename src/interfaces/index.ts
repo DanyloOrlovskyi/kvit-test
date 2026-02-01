@@ -1,10 +1,2 @@
-interface MapObject {
-  id: string;
-  lat: number;
-  lng: number;
-  direction: number;
-  lastUpdate: number;
-  status: 'active' | 'lost';
-}
-
-export type { MapObject };
+export type { AuthResult } from './auth.types';
+export type { LocationTuple, MapObject } from './map.types';

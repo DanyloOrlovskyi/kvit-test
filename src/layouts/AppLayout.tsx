@@ -1,17 +1,17 @@
-import { createBrowserRouter } from 'react-router';
+import { Navigate, Outlet } from 'react-router';
 
-import AppHeader from './components/AppHeader.tsx';
-import AuthDialog from './components/AuthDialog';
-import MapView from './components/MapView';
-import Sidebar from './components/Sidebar';
+import { AppHeader, Sidebar } from '@/components';
 
+import { rootStore } from '@/stores';
 import { Box, Drawer } from '@mui/material';
 import { observer } from 'mobx-react-lite';
-import { Outlet } from 'react-router';
-import { rootStore } from './stores';
 
-const ProtectedLayout = observer(() => {
-  const drawerWidth = window.innerWidth > 600 ? 310 : 0;
+import { DRAWER_WIDTH } from '@/constants';
+
+const AppLayout = observer(() => {
+  if (!rootStore.auth.isAuthenticated) {
+    return <Navigate to="/auth" replace />;
+  }
 
   return (
     <Box sx={{ height: '100vh', display: 'flex', flexDirection: 'column' }}>
@@ -29,14 +29,14 @@ const ProtectedLayout = observer(() => {
             width: '100%',
           }}
         >
-          <MapView />
+          <Outlet />
         </Box>
         <Drawer
           variant="persistent"
           anchor="right"
           open={rootStore.sidebar.isOpen}
           sx={{
-            width: drawerWidth,
+            width: DRAWER_WIDTH,
             borderLeft: 1,
             borderColor: 'divider',
             overflow: 'hidden',
@@ -49,23 +49,4 @@ const ProtectedLayout = observer(() => {
   );
 });
 
-const AuthGuard = observer(() => {
-  if (rootStore.auth.isAuthenticated) {
-    return <Outlet />;
-  }
-
-  return <AuthDialog />;
-});
-
-export const router = createBrowserRouter([
-  {
-    path: '/',
-    element: <AuthGuard />,
-    children: [
-      {
-        index: true,
-        element: <ProtectedLayout />,
-      },
-    ],
-  },
-]);
+export default AppLayout;

@@ -34,7 +34,8 @@ const theme = createTheme({
     },
   },
   status: {
-    danger: '#ff5252',
+    danger: '#d32f2f',
+    success: '#2e7d32',
   },
 });
 

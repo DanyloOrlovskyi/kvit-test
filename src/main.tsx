@@ -8,14 +8,13 @@ import CssBaseline from '@mui/material/CssBaseline';
 import { ThemeProvider } from '@mui/material/styles';
 import theme from './theme/theme.ts';
 
-import { RouterProvider } from 'react-router';
-import { router } from './router';
+import App from './App';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <RouterProvider router={router} />
+      <App />
     </ThemeProvider>
   </StrictMode>
 );
