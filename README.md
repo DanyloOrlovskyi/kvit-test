@@ -134,7 +134,7 @@ In Vite, variables are available via `import.meta.env`. The key is validated in 
 ## Code quality
 
 - ESLint + `typescript-eslint`, `eslint-plugin-react-hooks`, `eslint-plugin-react-refresh`.
-- Prettier with plugins for Tailwind and import sorting.
+- Prettier.
 
 ## Troubleshooting
 
